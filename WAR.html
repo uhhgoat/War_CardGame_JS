@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<!--Matyas Fenyves-->
+<html>
+	<head>
+		<title>WAR</title>
+		<style>
+			
+		</style>
+		<script type = "text/javascript" src = "playingcards.js">
+		</script>
+		<script>
+			var CARD_BACK = "back-blue-75-3.png" ;
+			var CARD_BLANK = "CardBlank.png" ;
+			var PLAYER_1 = 1, PLAYER_2 = 2, WAR = 0 ;
+			var p1Deck, p2Deck ;
+			var roundwinner = -1 ;
+			var p1Played = new Array() ;
+			var p2Played = new Array() ;
+			function fillPlayerHands()
+			{
+				p1Deck = generateStandardDeck() ;
+				p1Deck = shuffle(p1Deck) ;
+				p2Deck = p1Deck.splice(0, p1Deck.length/2) ;
+				storedVariables() ;
+				
+			}
+			function storedVariables()
+			{
+				cardback1 = document.getElementById("deck1") ;
+				cardback2 = document.getElementById("deck2") ;
+				Cards1 = document.getElementById("numCards1") ;
+				Cards2 = document.getElementById("numCards2") ;
+				cardPlayed1 = document.getElementById("playedCard1") ;
+				cardPlayed2 = document.getElementById("playedCard2") ;
+				message = document.getElementById("messageDisplay") ;
+			}
+			function display()
+			{
+				
+				if(p1Deck.length > 0)
+				{
+					cardback1.src = CARD_BACK ;
+				}
+				else
+				{
+					cardback1.src = CARD_BLANK ;
+				}
+				if(p2Deck.length > 0)
+				{
+					cardback2.src = CARD_BACK ;
+				}
+				else
+				{
+					cardback2.src = CARD_BLANK ;
+				}
+				Cards1.innerHTML = p1Deck.length + " cards" ;
+				Cards2.innerHTML = p2Deck.length + " cards" ;
+				cardPlayed1.src = extractCardData(p1Played[0],IMAGE) ;
+				cardPlayed2.src = extractCardData(p2Played[0],IMAGE) ;
+			}
+			function takeTurn()
+			{
+				playCards() ;
+				determineRound() ;
+				display() ;
+				cleanup() ;
+				//checkWinner() ;
+			}
+			function playCards()
+			{
+				for(var i = 0 ; i < 4 ; i++)
+				{
+					if(p1Deck.length > 0)
+					{
+						var card = dealCard(p1Deck) ;
+						insertCard(p1Played, card) ;
+					}
+					if(p2Deck.length > 0)
+					{
+						card = dealCard(p2Deck) ;
+						insertCard(p2Played, card) ;
+					}
+					if(roundwinner != WAR)
+					{
+						break ;
+					}
+				}
+			}
+			function determineRound()
+			{
+				theCard1 = extractCardData(p1Played[topOfDeck()],RANK) ;
+				theCard2 = extractCardData(p2Played[topOfDeck()],RANK) ;
+				if(theCard1 == 1)
+				{
+					theCard1 = 14 ;
+				}
+				if(theCard2 == 1)
+				{
+					theCard2 = 14 ;
+				}
+				if(parseInt(theCard1) > parseInt(theCard2))
+				{
+					message.innerHTML = "Player 1 Wins!" ;
+					roundwinner = PLAYER_1 ;
+				}
+				if(parseInt(theCard1) < parseInt(theCard2))
+				{
+					message.innerHTML = "Player 2 Wins!" ;
+					roundwinner = PLAYER_2 ;
+				}
+				if(parseInt(theCard1) == parseInt(theCard2))
+				{
+					message.innerHTML = "WAR!" ;
+					roundwinner = WAR ;
+				}
+			}
+			function cleanup()
+			{
+				if(roundwinner == WAR)
+				{
+					return ;
+				}
+				if(roundwinner == PLAYER_1)
+				{
+					p1Deck = p1Deck.concat(p1Played) ;
+					p1Deck = p1Deck.concat(p2Played) ;
+				}
+				if(roundwinner == PLAYER_2)
+				{
+					p2Deck = p2Deck.concat(p1Played) ;
+					p2Deck = p2Deck.concat(p2Played) ;
+				}
+				p1Played = new Array() ;
+				p2Played = new Array() ;
+				checkWinner() ;
+			}
+			function checkWinner()
+			{
+				if((p1deck.length > 0 && p2Deck.length > 0) || roundwinner == WAR)
+				return ;
+				if(p1Deck.length <= 0)
+					alert("Player 1 Wins!!!!!") ;
+				if(p2Deck.length <= 0)
+					alert("Player 2 Wins!!!!!") ;
+				document.getElementById("playbtn").disabled = true ;
+			}
+		</script>
+	</head>
+	<body onload = "fillPlayerHands() ;">
+		<img id = "deck1" src = "back-blue-75-3.png" /> <span id = "numCards1">26 cards</span><br />
+		<img id = "playedCard1" src = "CardBlank.png" /><br /><img id = "playedCard2" src = "CardBlank.png" /><br />
+		<img id = "deck2" src = "back-blue-75-3.png" /> <span id = "numCards2">26 cards</span><br />
+		<button id = "playbtn" onclick = "takeTurn() ;">Take Turn</button><br />
+		<div id = "messageDisplay"></div>
+	</body>
+</html>
